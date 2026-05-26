@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}校园论坛{% endblock %}</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            color: #1f2937;
+            background: #f5f7fb;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 8%;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f766e;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .nav-links a,
+        .nav-user {
+            color: #374151;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            color: #0f766e;
+        }
+
+        .main {
+            width: min(1080px, 92%);
+            margin: 0 auto;
+            padding: 54px 0;
+        }
+
+        .hero {
+            padding: 26px 0 34px;
+        }
+
+        h1 {
+            margin: 0 0 14px;
+            font-size: 42px;
+            color: #111827;
+        }
+
+        .welcome {
+            max-width: 720px;
+            margin: 0;
+            color: #4b5563;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .section-title {
+            margin: 26px 0 18px;
+            font-size: 24px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .card,
+        .form-card,
+        .profile-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #ffffff;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+        }
+
+        .card {
+            min-height: 150px;
+            padding: 24px;
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 21px;
+            color: #0f766e;
+        }
+
+        .card p,
+        .profile-card p {
+            margin: 0;
+            color: #6b7280;
+            line-height: 1.7;
+        }
+
+        .form-card,
+        .profile-card {
+            max-width: 520px;
+            padding: 28px;
+        }
+
+        .form-card label {
+            display: block;
+            margin: 16px 0 8px;
+            color: #374151;
+            font-weight: 700;
+        }
+
+        .form-card input {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-card input:focus {
+            border-color: #0f766e;
+            outline: none;
+        }
+
+        .button {
+            display: inline-block;
+            margin-top: 22px;
+            padding: 12px 20px;
+            border: 0;
+            border-radius: 8px;
+            color: #ffffff;
+            background: #0f766e;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background: #115e59;
+        }
+
+        .error {
+            margin: 0 0 16px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            color: #991b1b;
+            background: #fee2e2;
+        }
+
+        @media (max-width: 760px) {
+            .navbar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 14px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+            }
+
+            h1 {
+                font-size: 34px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a class="brand" href="{% url 'home' %}">校园论坛</a>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">首页</a>
+            <a href="{% url 'home' %}">板块</a>
+            {% if user.is_authenticated %}
+                <span class="nav-user">你好，{{ user.username }}</span>
+                <a href="{% url 'user_profile' user.username %}">个人主页</a>
+                <a href="{% url 'logout' %}">退出</a>
+            {% else %}
+                <a href="{% url 'login' %}">登录</a>
+                <a href="{% url 'register' %}">注册</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

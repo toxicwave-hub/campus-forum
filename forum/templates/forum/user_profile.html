@@ -1,0 +1,15 @@
+{% extends 'forum/base.html' %}
+
+{% block title %}{{ profile_user.username }} - 个人主页{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1>{{ profile_user.username }}</h1>
+        <p class="welcome">这是用户的个人主页。</p>
+    </section>
+
+    <section class="profile-card">
+        <h2 class="section-title">{{ profile_user.username }}</h2>
+        <p>这是用户的个人主页</p>
+    </section>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'forum/base.html' %}
+
+{% block title %}{{ post.title }} - 校园论坛{% endblock %}
+
+{% block content %}
+    <article class="post-box">
+        <h1>{{ post.title }}</h1>
+        <div class="meta">
+            <span>板块：<a href="{% url 'board_detail' post.board.slug %}">{{ post.board.name }}</a></span>
+            <span>作者：{{ post.author.username|default:'已注销用户' }}</span>
+            <span>创建时间：{{ post.created_at|date:'Y-m-d H:i' }}</span>
+            <span>浏览：{{ post.view_count }}</span>
+            <span>点赞：{{ post_like_count }}</span>
+        </div>
+        <div class="post-content">{{ post.content }}</div>
+
+        {% if user.is_authenticated %}
+            <form class="inline-form" method="post" action="{% url 'toggle_post_like' post.pk %}">
+                {% csrf_token %}
+                <button class="button button-secondary" type="submit">
+                    {% if user_liked_post %}取消点赞{% else %}点赞{% endif %}
+                </button>
+            </form>
+        {% endif %}
+    </article>
+
+    <section>
+        <h2 class="section-title">回帖</h2>
+        {% for reply in replies %}
+            <article class="reply-box">
+                <div class="meta">
+                    <span>作者：{{ reply.author.username|default:'已注销用户' }}</span>
+                    <span>创建时间：{{ reply.created_at|date:'Y-m-d H:i' }}</span>
+                    <span>点赞：{{ reply.like_count }}</span>
+                </div>
+                <div class="reply-content">{{ reply.content }}</div>
+
+                {% if user.is_authenticated %}
+                    <form class="inline-form" method="post" action="{% url 'toggle_reply_like' reply.pk %}">
+                        {% csrf_token %}
+                        <button class="button button-secondary" type="submit">
+                            {% if reply.pk in liked_reply_ids %}取消点赞{% else %}点赞{% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+            </article>
+        {% empty %}
+            <div class="reply-box">
+                <p class="muted">暂无回帖</p>
+            </div>
+        {% endfor %}
+    </section>
+
+    <section>
+        <h2 class="section-title">发表回帖</h2>
+        {% if user.is_authenticated %}
+            <form class="reply-box reply-form" method="post">
+                {% csrf_token %}
+                {% if reply_error %}
+                    <p class="error">{{ reply_error }}</p>
+                {% endif %}
+                <textarea name="content" placeholder="写下你的回复" required></textarea>
+                <button class="button" type="submit">提交回帖</button>
+            </form>
+        {% else %}
+            <div class="reply-box">
+                <p class="muted">登录后可以回帖</p>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

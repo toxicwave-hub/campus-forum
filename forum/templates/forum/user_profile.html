@@ -9,7 +9,30 @@
     </section>
 
     <section class="profile-card">
-        <h2 class="section-title">{{ profile_user.username }}</h2>
-        <p>这是用户的个人主页</p>
+        <h2 class="section-title">{{ profile.nickname|default:'暂未设置昵称' }}</h2>
+        <p>{{ profile.bio|default:'这个用户还没有填写个人简介。' }}</p>
+        <p style="margin-top: 14px;">帖子数量：{{ post_count }} ｜ 回帖数量：{{ reply_count }}</p>
+    </section>
+
+    <section>
+        <h2 class="section-title">发布过的帖子</h2>
+        <div class="post-list">
+            {% for post in posts %}
+                <article class="post-item">
+                    <h3 class="post-title">
+                        <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+                    </h3>
+                    <div class="meta">
+                        <span>板块：{{ post.board.name }}</span>
+                        <span>创建时间：{{ post.created_at|date:'Y-m-d H:i' }}</span>
+                        <span>浏览：{{ post.view_count }}</span>
+                        <span>回帖：{{ post.reply_count }}</span>
+                        <span>点赞：{{ post.like_count }}</span>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="muted">这个用户还没有发布过帖子。</p>
+            {% endfor %}
+        </div>
     </section>
 {% endblock %}

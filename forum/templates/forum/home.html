@@ -11,18 +11,17 @@
     <section>
         <h2 class="section-title">热门板块</h2>
         <div class="cards">
-            <article class="card">
-                <h3>化工学习</h3>
-                <p>整理课程笔记、实验思路和学习资料，互相补充知识点。</p>
-            </article>
-            <article class="card">
-                <h3>AI 工具</h3>
-                <p>讨论 AI 辅助学习、代码、资料整理和日常效率工具。</p>
-            </article>
-            <article class="card">
-                <h3>项目交流</h3>
-                <p>分享项目想法、进度记录和遇到的问题，一起推进作品。</p>
-            </article>
+            {% for board in boards %}
+                <article class="card">
+                    <h3><a href="{% url 'board_detail' board.slug %}">{{ board.name }}</a></h3>
+                    <p>{{ board.description|default:'进入这个板块查看和发布帖子。' }}</p>
+                </article>
+            {% empty %}
+                <article class="card">
+                    <h3>暂无板块</h3>
+                    <p>可以先运行 seed_forum 命令创建初始板块。</p>
+                </article>
+            {% endfor %}
         </div>
     </section>
 {% endblock %}

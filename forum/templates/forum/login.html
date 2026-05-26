@@ -10,6 +10,7 @@
 
     <form class="form-card" method="post">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next_url }}">
         {% if error %}
             <p class="error">{{ error }}</p>
         {% endif %}

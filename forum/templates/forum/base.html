@@ -86,7 +86,10 @@
 
         .card,
         .form-card,
-        .profile-card {
+        .profile-card,
+        .post-list,
+        .post-box,
+        .reply-box {
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             background: #ffffff;
@@ -104,8 +107,20 @@
             color: #0f766e;
         }
 
+        .card a,
+        .post-title a {
+            color: #0f766e;
+            text-decoration: none;
+        }
+
+        .card a:hover,
+        .post-title a:hover {
+            text-decoration: underline;
+        }
+
         .card p,
-        .profile-card p {
+        .profile-card p,
+        .muted {
             margin: 0;
             color: #6b7280;
             line-height: 1.7;
@@ -117,6 +132,43 @@
             padding: 28px;
         }
 
+        .post-list,
+        .post-box,
+        .reply-box {
+            padding: 22px;
+            margin-bottom: 16px;
+        }
+
+        .post-item {
+            padding: 18px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .post-item:last-child {
+            border-bottom: 0;
+        }
+
+        .post-title {
+            margin: 0 0 8px;
+            font-size: 22px;
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .post-content,
+        .reply-content {
+            margin-top: 18px;
+            color: #374151;
+            line-height: 1.9;
+            white-space: pre-wrap;
+        }
+
         .form-card label {
             display: block;
             margin: 16px 0 8px;
@@ -124,15 +176,30 @@
             font-weight: 700;
         }
 
-        .form-card input {
+        .form-card input,
+        .form-card textarea,
+        .reply-form textarea {
             width: 100%;
             padding: 12px 13px;
             border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 16px;
+            font-family: inherit;
         }
 
-        .form-card input:focus {
+        .form-card textarea,
+        .reply-form textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .reply-form textarea {
+            min-height: 110px;
+        }
+
+        .form-card input:focus,
+        .form-card textarea:focus,
+        .reply-form textarea:focus {
             border-color: #0f766e;
             outline: none;
         }
@@ -152,6 +219,18 @@
 
         .button:hover {
             background: #115e59;
+        }
+
+        .button-secondary {
+            background: #374151;
+        }
+
+        .button-secondary:hover {
+            background: #1f2937;
+        }
+
+        .inline-form {
+            display: inline;
         }
 
         .error {

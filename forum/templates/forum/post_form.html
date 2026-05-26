@@ -1,0 +1,25 @@
+{% extends 'forum/base.html' %}
+
+{% block title %}发布新帖 - {{ board.name }}{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1>发布新帖</h1>
+        <p class="welcome">正在发布到：{{ board.name }}</p>
+    </section>
+
+    <form class="form-card" method="post">
+        {% csrf_token %}
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <label for="title">标题</label>
+        <input id="title" name="title" type="text" required>
+
+        <label for="content">正文</label>
+        <textarea id="content" name="content" required></textarea>
+
+        <button class="button" type="submit">发布</button>
+    </form>
+{% endblock %}

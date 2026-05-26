@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园论坛</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            color: #1f2937;
+            background: #f5f7fb;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 8%;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f766e;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 18px;
+        }
+
+        .nav-links a {
+            color: #374151;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            color: #0f766e;
+        }
+
+        .main {
+            width: min(1080px, 92%);
+            margin: 0 auto;
+            padding: 54px 0;
+        }
+
+        .hero {
+            padding: 26px 0 34px;
+        }
+
+        h1 {
+            margin: 0 0 14px;
+            font-size: 42px;
+            color: #111827;
+        }
+
+        .welcome {
+            max-width: 720px;
+            margin: 0;
+            color: #4b5563;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .section-title {
+            margin: 26px 0 18px;
+            font-size: 24px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            min-height: 150px;
+            padding: 24px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #ffffff;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 21px;
+            color: #0f766e;
+        }
+
+        .card p {
+            margin: 0;
+            color: #6b7280;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 760px) {
+            .navbar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 14px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+            }
+
+            h1 {
+                font-size: 34px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand">校园论坛</div>
+        <div class="nav-links">
+            <a href="/">首页</a>
+            <a href="/">板块</a>
+            <a href="/">登录</a>
+            <a href="/">注册</a>
+        </div>
+    </nav>
+
+    <main class="main">
+        <section class="hero">
+            <h1>校园论坛</h1>
+            <p class="welcome">欢迎来到校园论坛，这里可以交流学习、项目、实验和技术问题。</p>
+        </section>
+
+        <section>
+            <h2 class="section-title">热门板块</h2>
+            <div class="cards">
+                <article class="card">
+                    <h3>化工学习</h3>
+                    <p>整理课程笔记、实验思路和学习资料，互相补充知识点。</p>
+                </article>
+                <article class="card">
+                    <h3>AI 工具</h3>
+                    <p>讨论 AI 辅助学习、代码、资料整理和日常效率工具。</p>
+                </article>
+                <article class="card">
+                    <h3>项目交流</h3>
+                    <p>分享项目想法、进度记录和遇到的问题，一起推进作品。</p>
+                </article>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

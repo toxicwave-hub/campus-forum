@@ -1,0 +1,32 @@
+{% extends 'forum/base.html' %}
+{% load forum_extras %}
+
+{% block title %}搜索 // CYBER FORUM{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1 style="font-size: 40px;">SEARCH</h1>
+        <p class="welcome">// 在所有帖子中查询 //</p>
+    </section>
+
+    <form class="form-card" method="get" action="{% url 'search' %}" style="max-width: 720px;">
+        <label for="id_q">关键词</label>
+        <input id="id_q" type="text" name="q" class="form-input" value="{{ query }}" placeholder="// 例如：化工、AI、毕设">
+        <div style="margin-top: 14px;"><button class="button" type="submit">QUERY</button></div>
+    </form>
+
+    {% if query %}
+    <section style="margin-top: 32px;">
+        <div class="section-title">
+            <span>RESULTS · "{{ query }}"</span>
+            <span class="more muted">{% if page_obj %}{{ page_obj.paginator.count }} 条{% endif %}</span>
+        </div>
+        <div class="post-list">
+            {% for post in posts %}{% include 'forum/_post_card.html' %}{% empty %}
+                <div style="padding: 40px; text-align: center;"><p class="muted">// 没有匹配的帖子 //</p></div>
+            {% endfor %}
+        </div>
+        {% include 'forum/_pagination.html' %}
+    </section>
+    {% endif %}
+{% endblock %}

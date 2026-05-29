@@ -1,0 +1,23 @@
+{% extends 'forum/base.html' %}
+
+{% block title %}编辑主页{% endblock %}
+
+{% block content %}
+    <section class="hero"><h1 style="font-size: 36px;">编辑主页</h1>
+        <p class="welcome">// 个性化你的身份 //</p></section>
+
+    <form class="form-card" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="error">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<ul class="helptext"><li>{{ field.help_text|safe }}</li></ul>{% endif %}
+            {{ field.errors }}
+        {% endfor %}
+        <div style="margin-top: 22px; display: flex; gap: 8px;">
+            <button class="button" type="submit">保存</button>
+            <a class="button button-ghost" href="{% url 'user_profile' user.username %}">取消</a>
+        </div>
+    </form>
+{% endblock %}

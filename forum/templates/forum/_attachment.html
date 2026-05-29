@@ -1,0 +1,13 @@
+{% if att.kind == 'image' %}
+    <a class="att att-image" href="{{ att.url }}" target="_blank" rel="noopener">
+        <img src="{{ att.url }}" alt="{{ att.original_name }}" loading="lazy">
+    </a>
+{% elif att.kind == 'video' %}
+    <video class="att att-video" controls preload="metadata" src="{{ att.url }}"></video>
+{% else %}
+    <a class="att att-file" href="{{ att.url }}" download>
+        <span class="att-file-icon">📄</span>
+        <span class="att-file-name">{{ att.original_name|default:'文件' }}</span>
+        <span class="att-file-size">{{ att.size_display }}</span>
+    </a>
+{% endif %}

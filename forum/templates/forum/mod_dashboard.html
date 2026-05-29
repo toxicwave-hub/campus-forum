@@ -1,0 +1,45 @@
+{% extends 'forum/base.html' %}
+
+{% block title %}版主面板 - {{ board.name }}{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1 style="font-size: 32px;">版主面板 // {{ board.name }}</h1>
+        <p class="welcome">处理待审举报，保持板块秩序。</p>
+    </section>
+
+    <section>
+        <div class="section-title"><span>OPEN REPORTS · {{ reports|length }}</span></div>
+        <div class="post-list">
+            {% for r in reports %}
+                <article class="post-item">
+                    <div class="post-item-body">
+                        <h3 class="post-title">
+                            举报：{{ r.reason }}
+                            {% if r.post %}<a href="{% url 'post_detail' r.post.pk %}">→ 查看帖子</a>{% endif %}
+                            {% if r.reply %}<a href="{% url 'post_detail' r.reply.post.pk %}#reply-{{ r.reply.pk }}">→ 查看回帖</a>{% endif %}
+                        </h3>
+                        <div class="meta">
+                            <span>举报人 @{{ r.reporter.username|default:'匿名' }}</span>
+                            <span class="dot"></span>
+                            <span>{{ r.created_at|date:'Y-m-d H:i' }}</span>
+                        </div>
+                        {% if r.detail %}<p class="muted" style="margin-top: 6px;">{{ r.detail }}</p>{% endif %}
+                        <div style="margin-top: 12px; display: flex; gap: 6px;">
+                            <form class="inline-form" method="post" action="{% url 'mod_report_resolve' r.pk %}">
+                                {% csrf_token %}
+                                <button class="button button-danger button-small" name="action" value="remove">删除内容</button>
+                            </form>
+                            <form class="inline-form" method="post" action="{% url 'mod_report_resolve' r.pk %}">
+                                {% csrf_token %}
+                                <button class="button button-secondary button-small" name="action" value="dismiss">驳回</button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <div style="padding: 40px; text-align: center;"><p class="muted">// 没有待处理举报 //</p></div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

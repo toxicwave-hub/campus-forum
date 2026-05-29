@@ -1,26 +1,27 @@
 {% extends 'forum/base.html' %}
 
-{% block title %}登录 - 校园论坛{% endblock %}
+{% block title %}登录 // CYBER FORUM{% endblock %}
 
 {% block content %}
     <section class="hero">
-        <h1>登录</h1>
-        <p class="welcome">登录后可以查看自己的论坛身份状态。</p>
+        <h1 class="glitch" data-text="ACCESS" style="font-size: 56px;">ACCESS</h1>
+        <p class="welcome">// 输入凭证 //</p>
     </section>
 
     <form class="form-card" method="post">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ next_url }}">
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
+        {% if form.non_field_errors %}<div class="error">{{ form.non_field_errors }}</div>{% endif %}
 
-        <label for="username">用户名</label>
-        <input id="username" name="username" type="text" required>
+        <label for="{{ form.username.id_for_label }}">用户名</label>
+        {{ form.username }}{{ form.username.errors }}
 
-        <label for="password">密码</label>
-        <input id="password" name="password" type="password" required>
+        <label for="{{ form.password.id_for_label }}">密码</label>
+        {{ form.password }}{{ form.password.errors }}
 
-        <button class="button" type="submit">登录</button>
+        <div style="margin-top: 22px; display: flex; gap: 8px; align-items: center;">
+            <button class="button" type="submit">CONNECT</button>
+            <a class="button button-ghost" href="{% url 'register' %}">注册新账号</a>
+        </div>
     </form>
 {% endblock %}

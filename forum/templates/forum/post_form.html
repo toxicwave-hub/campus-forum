@@ -1,25 +1,58 @@
 {% extends 'forum/base.html' %}
 
-{% block title %}发布新帖 - {{ board.name }}{% endblock %}
+{% block title %}{% if editing %}编辑帖子{% else %}发布新帖{% endif %} // CYBER FORUM{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
+{% endblock %}
 
 {% block content %}
     <section class="hero">
-        <h1>发布新帖</h1>
-        <p class="welcome">正在发布到：{{ board.name }}</p>
+        <h1 style="font-size: 36px;">{% if editing %}编辑帖子{% else %}发布新帖{% endif %}</h1>
+        <p class="welcome">{% if editing %}修改后立即生效。{% else %}// 正在发布到：{{ board.name }} //{% endif %}</p>
     </section>
 
-    <form class="form-card" method="post">
+    <form class="form-card form-card-wide" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
+        {% if form.non_field_errors %}<div class="error">{{ form.non_field_errors }}</div>{% endif %}
 
-        <label for="title">标题</label>
-        <input id="title" name="title" type="text" required>
+        <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+        {{ form.title }}{{ form.title.errors }}
 
-        <label for="content">正文</label>
-        <textarea id="content" name="content" required></textarea>
+        <label for="{{ form.content.id_for_label }}">{{ form.content.label }}</label>
+        {{ form.content }}{{ form.content.errors }}
 
-        <button class="button" type="submit">发布</button>
+        <label for="{{ form.cover_image.id_for_label }}">{{ form.cover_image.label }}</label>
+        {{ form.cover_image }}{{ form.cover_image.errors }}
+
+        <label class="upload-label" style="margin-top: 14px;">
+            📎 {{ form.attachments.label }}
+            {{ form.attachments }}
+        </label>{{ form.attachments.errors }}
+
+        <div style="margin-top: 14px; display: flex; gap: 18px; flex-wrap: wrap;">
+            <label class="checkbox-label">{{ form.is_nsfw }} {{ form.is_nsfw.label }}</label>
+            <label class="checkbox-label">{{ form.save_as_draft }} {{ form.save_as_draft.label }}</label>
+        </div>
+
+        <div style="margin-top: 22px; display: flex; gap: 8px;">
+            <button class="button" type="submit">{% if editing %}保存{% else %}发布{% endif %}</button>
+            <a class="button button-ghost" href="{% url 'board_detail' board.slug %}">取消</a>
+        </div>
     </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js" defer></script>
+    <script defer>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ta = document.getElementById('{{ form.content.id_for_label }}');
+            if (ta && window.EasyMDE) {
+                new EasyMDE({
+                    element: ta, spellChecker: false,
+                    minHeight: '320px',
+                    placeholder: '支持 Markdown',
+                    status: ['lines', 'words'],
+                });
+            }
+        });
+    </script>
 {% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'forum/base.html' %}
+
+{% block title %}确认删除{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1 style="font-size: 36px; -webkit-text-fill-color: var(--neon-red); background: none;">⚠ DELETE</h1>
+        <p class="welcome">// 此操作不可撤销 //</p>
+    </section>
+
+    <div class="form-card">
+        <p>即将删除 {{ object_label }}：</p>
+        <blockquote style="margin: 12px 0; padding: 12px 16px; border-left: 3px solid var(--neon-red); background: rgba(255,0,60,0.06); border-radius: 0 6px 6px 0; color: var(--text-secondary);">
+            {{ object_text }}
+        </blockquote>
+        <form method="post" style="margin-top: 22px; display: flex; gap: 8px;">
+            {% csrf_token %}
+            <button class="button button-danger" type="submit">确认删除</button>
+            <a class="button button-ghost" href="{{ cancel_url }}">取消</a>
+        </form>
+    </div>
+{% endblock %}

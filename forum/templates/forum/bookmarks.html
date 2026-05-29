@@ -1,0 +1,32 @@
+{% extends 'forum/base.html' %}
+{% load forum_extras %}
+
+{% block title %}收藏 // CYBER FORUM{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1 style="font-size: 36px;">收藏</h1>
+        <p class="welcome">所有收藏过的帖子。</p>
+    </section>
+
+    <section class="post-list">
+        {% for b in bookmarks %}
+            <article class="post-item">
+                <div class="vote-col">
+                    <span class="vote-score">{{ b.post.score }}</span>
+                </div>
+                <div class="post-item-body">
+                    <h3 class="post-title"><a href="{% url 'post_detail' b.post.pk %}">{{ b.post.title }}</a></h3>
+                    <div class="meta">
+                        <a href="{% url 'board_detail' b.post.board.slug %}">{{ b.post.board.icon }} {{ b.post.board.name }}</a>
+                        <span class="dot"></span>
+                        <span>收藏于 {{ b.created_at|date:'Y-m-d H:i' }}</span>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div style="padding: 40px; text-align: center;"><p class="muted">// 还没有收藏任何帖子 //</p></div>
+        {% endfor %}
+    </section>
+    {% include 'forum/_pagination.html' %}
+{% endblock %}

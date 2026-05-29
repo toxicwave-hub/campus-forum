@@ -1,0 +1,46 @@
+{% extends 'forum/base.html' %}
+{% load forum_extras %}
+
+{% block title %}通知 // CYBER FORUM{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1 style="font-size: 36px;">通知</h1>
+        <p class="welcome">来自其他用户的互动。</p>
+        {% if notifications %}
+            <form method="post" action="{% url 'notifications_mark_all_read' %}" style="margin-top: 14px;">
+                {% csrf_token %}
+                <button class="button button-secondary button-small" type="submit">全部标为已读</button>
+            </form>
+        {% endif %}
+    </section>
+
+    <section>
+        <div class="post-list">
+            {% for n in notifications %}
+                <a class="notification-item {% if not n.is_read %}unread{% endif %}" href="{% url 'notification_open' n.pk %}">
+                    {% avatar n.actor 36 %}
+                    <div class="body">
+                        <p>
+                            <strong>{{ n.actor.username|default:'有人' }}</strong>
+                            {% if n.kind == 'reply' %}回复了你的帖子 <strong>《{{ n.post.title|truncatechars:40 }}》</strong>
+                            {% elif n.kind == 'reply_to_reply' %}回复了你的回帖 <strong>《{{ n.post.title|truncatechars:40 }}》</strong>
+                            {% elif n.kind == 'post_like' %}点赞了你的帖子 <strong>《{{ n.post.title|truncatechars:40 }}》</strong>
+                            {% elif n.kind == 'reply_like' %}点赞了你的回帖
+                            {% elif n.kind == 'mention' %}在 <strong>《{{ n.post.title|truncatechars:40 }}》</strong> 提到了你
+                            {% elif n.kind == 'follow' %}关注了你
+                            {% elif n.kind == 'message' %}给你发了私信
+                            {% endif %}
+                        </p>
+                        {% if n.reply %}<p class="muted" style="font-size: 13px;">{{ n.reply.content|truncatechars:80 }}</p>{% endif %}
+                        <span class="time">{{ n.created_at|date:'Y-m-d H:i' }}</span>
+                    </div>
+                    {% if not n.is_read %}<span class="dot-unread" aria-label="未读"></span>{% endif %}
+                </a>
+            {% empty %}
+                <div style="padding: 40px; text-align: center;"><p class="muted">// 还没有任何通知 //</p></div>
+            {% endfor %}
+        </div>
+        {% include 'forum/_pagination.html' %}
+    </section>
+{% endblock %}

@@ -1,38 +1,46 @@
 {% extends 'forum/base.html' %}
+{% load forum_extras %}
 
-{% block title %}{{ profile_user.username }} - 个人主页{% endblock %}
+{% block title %}{{ profile.display_name }} // CYBER FORUM{% endblock %}
 
 {% block content %}
-    <section class="hero">
-        <h1>{{ profile_user.username }}</h1>
-        <p class="welcome">这是用户的个人主页。</p>
-    </section>
-
-    <section class="profile-card">
-        <h2 class="section-title">{{ profile.nickname|default:'暂未设置昵称' }}</h2>
-        <p>{{ profile.bio|default:'这个用户还没有填写个人简介。' }}</p>
-        <p style="margin-top: 14px;">帖子数量：{{ post_count }} ｜ 回帖数量：{{ reply_count }}</p>
+    <section class="profile-header">
+        {% avatar profile_user 96 %}
+        <div class="body">
+            <h2>{{ profile.display_name }}</h2>
+            <p>{{ profile.bio|default:'这个用户还没有填写个人简介。' }}</p>
+            <div class="profile-stats">
+                <span><strong>{{ post_count }}</strong> 帖子</span>
+                <span><strong>{{ reply_count }}</strong> 回帖</span>
+                <a href="{% url 'followers' profile_user.username %}"><strong data-follower-count>{{ follower_count }}</strong> 粉丝</a>
+                <a href="{% url 'following' profile_user.username %}"><strong>{{ following_count }}</strong> 关注</a>
+            </div>
+            <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                {% if user == profile_user %}
+                    <a class="button button-secondary button-small" href="{% url 'profile_edit' %}">编辑主页</a>
+                {% elif user.is_authenticated %}
+                    <form class="inline-form" method="post" action="{% url 'toggle_follow' profile_user.username %}" data-follow-form>
+                        {% csrf_token %}
+                        <button class="action-btn follow-btn" data-following="{{ is_following|yesno:'true,false' }}">
+                            <span class="label">{% if is_following %}已关注{% else %}+ 关注{% endif %}</span>
+                        </button>
+                    </form>
+                    <a class="button button-secondary button-small" href="{% url 'conversation' profile_user.username %}">私信</a>
+                {% endif %}
+            </div>
+        </div>
     </section>
 
     <section>
-        <h2 class="section-title">发布过的帖子</h2>
+        <div class="section-title">
+            <span>POSTS</span>
+            <span class="more muted">共 {{ post_count }} 帖</span>
+        </div>
         <div class="post-list">
-            {% for post in posts %}
-                <article class="post-item">
-                    <h3 class="post-title">
-                        <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
-                    </h3>
-                    <div class="meta">
-                        <span>板块：{{ post.board.name }}</span>
-                        <span>创建时间：{{ post.created_at|date:'Y-m-d H:i' }}</span>
-                        <span>浏览：{{ post.view_count }}</span>
-                        <span>回帖：{{ post.reply_count }}</span>
-                        <span>点赞：{{ post.like_count }}</span>
-                    </div>
-                </article>
-            {% empty %}
-                <p class="muted">这个用户还没有发布过帖子。</p>
+            {% for post in posts %}{% include 'forum/_post_card.html' %}{% empty %}
+                <div style="padding: 32px; text-align: center;"><p class="muted">// 这个用户还没有发布过帖子 //</p></div>
             {% endfor %}
         </div>
+        {% include 'forum/_pagination.html' %}
     </section>
 {% endblock %}

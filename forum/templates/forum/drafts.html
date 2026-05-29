@@ -1,0 +1,32 @@
+{% extends 'forum/base.html' %}
+{% load forum_extras %}
+
+{% block title %}草稿箱{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1 style="font-size: 36px;">草稿箱</h1>
+        <p class="welcome">保存但还没发布的帖子。</p>
+    </section>
+
+    <section class="post-list">
+        {% for post in drafts %}
+            <article class="post-item">
+                <div class="post-item-body">
+                    <h3 class="post-title">
+                        <span class="draft-badge">DRAFT</span>
+                        <a href="{% url 'post_edit' post.pk %}">{{ post.title|default:'(无标题)' }}</a>
+                    </h3>
+                    <div class="meta">
+                        <a href="{% url 'board_detail' post.board.slug %}">{{ post.board.icon }} {{ post.board.name }}</a>
+                        <span class="dot"></span>
+                        <span>更新于 {{ post.updated_at|date:'Y-m-d H:i' }}</span>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div style="padding: 40px; text-align: center;"><p class="muted">// 没有草稿 //</p></div>
+        {% endfor %}
+    </section>
+    {% include 'forum/_pagination.html' %}
+{% endblock %}

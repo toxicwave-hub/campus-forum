@@ -1,0 +1,39 @@
+{% extends 'forum/base.html' %}
+{% load forum_extras %}
+
+{% block title %}{% if kind == 'followers' %}{{ profile_user.username }} 的粉丝{% else %}{{ profile_user.username }} 的关注{% endif %}{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1 style="font-size: 32px;">{% if kind == 'followers' %}粉丝{% else %}关注的人{% endif %}</h1>
+        <p class="welcome"><a href="{% url 'user_profile' profile_user.username %}">@{{ profile_user.username }}</a></p>
+    </section>
+
+    <section class="post-list">
+        {% for f in follows %}
+            {% if kind == 'followers' %}
+                {% with target=f.follower %}
+                    <div class="post-item">
+                        {% avatar target 36 %}
+                        <div class="post-item-body">
+                            <h3 class="post-title"><a href="{% url 'user_profile' target.username %}">{{ target.username }}</a></h3>
+                            <div class="meta"><span>关注于 {{ f.created_at|date:'Y-m-d' }}</span></div>
+                        </div>
+                    </div>
+                {% endwith %}
+            {% else %}
+                {% with target=f.followee %}
+                    <div class="post-item">
+                        {% avatar target 36 %}
+                        <div class="post-item-body">
+                            <h3 class="post-title"><a href="{% url 'user_profile' target.username %}">{{ target.username }}</a></h3>
+                            <div class="meta"><span>关注于 {{ f.created_at|date:'Y-m-d' }}</span></div>
+                        </div>
+                    </div>
+                {% endwith %}
+            {% endif %}
+        {% empty %}
+            <div style="padding: 40px; text-align: center;"><p class="muted">// 列表为空 //</p></div>
+        {% endfor %}
+    </section>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'forum/base.html' %}
+{% load forum_extras %}
+
+{% block title %}与 {{ other.username }} 的对话{% endblock %}
+
+{% block content %}
+    <section class="hero" style="padding: 24px 0 12px;">
+        <p class="welcome"><a href="{% url 'conversations' %}">← 所有对话</a></p>
+    </section>
+
+    <div class="chat-window">
+        <div class="chat-header">
+            {% avatar other 36 %}
+            <div>
+                <strong>{{ other.username }}</strong>
+                <div class="muted" style="font-size: 12px;">@<a href="{% url 'user_profile' other.username %}">{{ other.username }}</a></div>
+            </div>
+        </div>
+
+        <div class="chat-body" id="chat-body">
+            {% for m in messages_list %}
+                <div class="chat-bubble {% if m.sender == user %}me{% else %}them{% endif %}">
+                    {% if m.content %}{{ m.content|linebreaksbr }}{% endif %}
+                    {% if m.image %}<img src="{{ m.image.url }}" alt="">{% endif %}
+                    <span class="time">{{ m.created_at|date:'H:i' }}</span>
+                </div>
+            {% empty %}
+                <div style="margin: auto; text-align: center; color: var(--text-tertiary);">// 发送第一条消息开始对话 //</div>
+            {% endfor %}
+        </div>
+
+        <form class="chat-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <textarea name="content" class="form-input" placeholder="输入消息（Enter 发送，Shift+Enter 换行）"></textarea>
+            <label class="upload-label" style="padding: 8px 12px;">
+                📎
+                <input type="file" name="image" accept="image/*" style="display: none;">
+            </label>
+            <button class="button" type="submit">发送</button>
+        </form>
+    </div>
+
+    <script>
+        document.querySelector('.chat-form textarea').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.form.submit();
+            }
+        });
+    </script>
+{% endblock %}

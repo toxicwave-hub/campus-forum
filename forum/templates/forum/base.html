@@ -1,276 +1,36 @@
+{% load static %}
+{% load forum_extras %}
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}校园论坛{% endblock %}</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, "Microsoft YaHei", sans-serif;
-            color: #1f2937;
-            background: #f5f7fb;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 8%;
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .brand {
-            font-size: 22px;
-            font-weight: 700;
-            color: #0f766e;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .nav-links a,
-        .nav-user {
-            color: #374151;
-            text-decoration: none;
-            font-size: 15px;
-        }
-
-        .nav-links a:hover {
-            color: #0f766e;
-        }
-
-        .main {
-            width: min(1080px, 92%);
-            margin: 0 auto;
-            padding: 54px 0;
-        }
-
-        .hero {
-            padding: 26px 0 34px;
-        }
-
-        h1 {
-            margin: 0 0 14px;
-            font-size: 42px;
-            color: #111827;
-        }
-
-        .welcome {
-            max-width: 720px;
-            margin: 0;
-            color: #4b5563;
-            font-size: 18px;
-            line-height: 1.8;
-        }
-
-        .section-title {
-            margin: 26px 0 18px;
-            font-size: 24px;
-        }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-        }
-
-        .card,
-        .form-card,
-        .profile-card,
-        .post-list,
-        .post-box,
-        .reply-box {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            background: #ffffff;
-            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
-        }
-
-        .card {
-            min-height: 150px;
-            padding: 24px;
-        }
-
-        .card h3 {
-            margin: 0 0 10px;
-            font-size: 21px;
-            color: #0f766e;
-        }
-
-        .card a,
-        .post-title a {
-            color: #0f766e;
-            text-decoration: none;
-        }
-
-        .card a:hover,
-        .post-title a:hover {
-            text-decoration: underline;
-        }
-
-        .card p,
-        .profile-card p,
-        .muted {
-            margin: 0;
-            color: #6b7280;
-            line-height: 1.7;
-        }
-
-        .form-card,
-        .profile-card {
-            max-width: 520px;
-            padding: 28px;
-        }
-
-        .post-list,
-        .post-box,
-        .reply-box {
-            padding: 22px;
-            margin-bottom: 16px;
-        }
-
-        .post-item {
-            padding: 18px 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .post-item:last-child {
-            border-bottom: 0;
-        }
-
-        .post-title {
-            margin: 0 0 8px;
-            font-size: 22px;
-        }
-
-        .meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .post-content,
-        .reply-content {
-            margin-top: 18px;
-            color: #374151;
-            line-height: 1.9;
-            white-space: pre-wrap;
-        }
-
-        .form-card label {
-            display: block;
-            margin: 16px 0 8px;
-            color: #374151;
-            font-weight: 700;
-        }
-
-        .form-card input,
-        .form-card textarea,
-        .reply-form textarea {
-            width: 100%;
-            padding: 12px 13px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: inherit;
-        }
-
-        .form-card textarea,
-        .reply-form textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-
-        .reply-form textarea {
-            min-height: 110px;
-        }
-
-        .form-card input:focus,
-        .form-card textarea:focus,
-        .reply-form textarea:focus {
-            border-color: #0f766e;
-            outline: none;
-        }
-
-        .button {
-            display: inline-block;
-            margin-top: 22px;
-            padding: 12px 20px;
-            border: 0;
-            border-radius: 8px;
-            color: #ffffff;
-            background: #0f766e;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-        }
-
-        .button:hover {
-            background: #115e59;
-        }
-
-        .button-secondary {
-            background: #374151;
-        }
-
-        .button-secondary:hover {
-            background: #1f2937;
-        }
-
-        .inline-form {
-            display: inline;
-        }
-
-        .error {
-            margin: 0 0 16px;
-            padding: 12px 14px;
-            border-radius: 8px;
-            color: #991b1b;
-            background: #fee2e2;
-        }
-
-        @media (max-width: 760px) {
-            .navbar {
-                align-items: flex-start;
-                flex-direction: column;
-                gap: 14px;
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-            }
-
-            h1 {
-                font-size: 34px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <meta name="theme-color" content="#05060e">
+    <title>{% block title %}CYBER FORUM // 校园论坛{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'forum/css/style.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
+    <div class="scanlines" aria-hidden="true"></div>
+
     <nav class="navbar">
-        <a class="brand" href="{% url 'home' %}">校园论坛</a>
+        <a class="brand" href="{% url 'home' %}">
+            <span class="brand-mark">校</span>
+            <span class="brand-glitch" data-text="CYBER FORUM">CYBER FORUM</span>
+        </a>
         <div class="nav-links">
             <a href="{% url 'home' %}">首页</a>
-            <a href="{% url 'home' %}">板块</a>
+            <form class="nav-search" method="get" action="{% url 'search' %}" role="search">
+                <span class="nav-search-icon" aria-hidden="true"></span>
+                <input type="search" name="q" placeholder="SEARCH //" value="{{ request.GET.q|default:'' }}">
+            </form>
             {% if user.is_authenticated %}
-                <span class="nav-user">你好，{{ user.username }}</span>
-                <a href="{% url 'user_profile' user.username %}">个人主页</a>
+                <a href="{% url 'conversations' %}">私信{% if unread_messages_count %}<span class="nav-badge">{{ unread_messages_count }}</span>{% endif %}</a>
+                <a href="{% url 'bookmarks' %}">收藏</a>
+                <a href="{% url 'drafts' %}">草稿</a>
+                <a href="{% url 'notifications' %}">通知{% if unread_notifications_count %}<span class="nav-badge">{{ unread_notifications_count }}</span>{% endif %}</a>
+                <a href="{% url 'user_profile' user.username %}">{% avatar user 24 %}</a>
+                <span class="nav-user">{{ user.username }}</span>
                 <a href="{% url 'logout' %}">退出</a>
             {% else %}
                 <a href="{% url 'login' %}">登录</a>
@@ -279,8 +39,19 @@
         </div>
     </nav>
 
+    {% if messages %}
+        <div class="flashes">
+            {% for message in messages %}
+                <div class="flash {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <main class="main">
         {% block content %}{% endblock %}
     </main>
+
+    <script src="{% static 'forum/js/app.js' %}" defer></script>
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>

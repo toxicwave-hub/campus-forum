@@ -1,71 +1,175 @@
 {% extends 'forum/base.html' %}
+{% load forum_extras %}
 
-{% block title %}{{ post.title }} - 校园论坛{% endblock %}
+{% block title %}{{ post.title }} // CYBER FORUM{% endblock %}
 
 {% block content %}
     <article class="post-box">
-        <h1>{{ post.title }}</h1>
-        <div class="meta">
-            <span>板块：<a href="{% url 'board_detail' post.board.slug %}">{{ post.board.name }}</a></span>
-            <span>作者：{{ post.author.username|default:'已注销用户' }}</span>
-            <span>创建时间：{{ post.created_at|date:'Y-m-d H:i' }}</span>
-            <span>浏览：{{ post.view_count }}</span>
-            <span>点赞：{{ post_like_count }}</span>
-        </div>
-        <div class="post-content">{{ post.content }}</div>
+        <div class="post-detail-grid">
+            <div class="vote-col">
+                <form class="inline-form" method="post" action="{% url 'post_vote' post.pk %}" data-vote-form>
+                    {% csrf_token %}
+                    <button type="submit" name="value" value="{% if user_vote_for_post == 1 %}0{% else %}1{% endif %}"
+                            class="vote-btn vote-up {% if user_vote_for_post == 1 %}is-active{% endif %}">▲</button>
+                    <span class="vote-score">{{ post.score }}</span>
+                    <button type="submit" name="value" value="{% if user_vote_for_post == -1 %}0{% else %}-1{% endif %}"
+                            class="vote-btn vote-down {% if user_vote_for_post == -1 %}is-active{% endif %}">▼</button>
+                </form>
+            </div>
 
-        {% if user.is_authenticated %}
-            <form class="inline-form" method="post" action="{% url 'toggle_post_like' post.pk %}">
-                {% csrf_token %}
-                <button class="button button-secondary" type="submit">
-                    {% if user_liked_post %}取消点赞{% else %}点赞{% endif %}
-                </button>
-            </form>
-        {% endif %}
+            <div>
+                <h1 style="font-size: clamp(28px, 4vw, 38px); -webkit-text-fill-color: var(--text); background: none;">{{ post.title }}</h1>
+                <div class="meta" style="margin-bottom: 12px;">
+                    {% if post.is_pinned %}<span class="pin-badge">PIN</span>{% endif %}
+                    {% if post.is_nsfw %}<span class="nsfw-badge">NSFW</span>{% endif %}
+                    {% if post.status == 'draft' %}<span class="draft-badge">DRAFT</span>{% endif %}
+                    {% avatar post.author 24 %}
+                    <a href="{% url 'user_profile' post.author.username %}">{{ post.author.username|default:'已注销用户' }}</a>
+                    <span class="dot"></span>
+                    <a href="{% url 'board_detail' post.board.slug %}">{{ post.board.icon }} {{ post.board.name }}</a>
+                    <span class="dot"></span>
+                    <span>{{ post.created_at|date:'Y-m-d H:i' }}</span>
+                    <span class="dot"></span>
+                    <span>👁 {{ post.view_count }}</span>
+                </div>
+
+                {% if post.cover_image %}
+                    <a href="{{ post.cover_image.url }}" target="_blank" rel="noopener" class="post-cover-large">
+                        <img src="{{ post.cover_image.url }}" alt="封面" loading="lazy">
+                    </a>
+                {% endif %}
+
+                <div class="markdown-body">{{ post.content|markdown }}</div>
+
+                {% link_preview_for post.content as preview %}
+                {% if preview %}
+                    <a class="link-preview" href="{{ preview.url }}" target="_blank" rel="noopener">
+                        {% if preview.image %}<img src="{{ preview.image }}" alt="" loading="lazy">{% endif %}
+                        <div class="link-preview-body">
+                            <div class="link-preview-site">{{ preview.site_name }}</div>
+                            <div class="link-preview-title">{{ preview.title }}</div>
+                            {% if preview.description %}<div class="link-preview-desc">{{ preview.description|truncatechars:140 }}</div>{% endif %}
+                        </div>
+                    </a>
+                {% endif %}
+
+                {% if post.attachments.all %}
+                    <div class="attachments">
+                        {% for att in post.attachments.all %}
+                            {% include 'forum/_attachment.html' with att=att %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="post-actions">
+                    {% if user.is_authenticated %}
+                        <form class="inline-form" method="post" action="{% url 'toggle_bookmark' post.pk %}" data-bookmark-form>
+                            {% csrf_token %}
+                            <button class="action-btn heart-btn {% if user_bookmarked %}is-active{% endif %}" type="submit">
+                                <span class="heart">{% if user_bookmarked %}★{% else %}☆{% endif %}</span>
+                                <span class="label">{% if user_bookmarked %}已收藏{% else %}收藏{% endif %}</span>
+                            </button>
+                        </form>
+                        <a class="button button-ghost" href="{% url 'report_post' post.pk %}">举报</a>
+                    {% endif %}
+
+                    {% if user == post.author or user.is_staff or is_moderator %}
+                        <a class="button button-ghost" href="{% url 'post_edit' post.pk %}">编辑</a>
+                        <a class="button button-ghost" href="{% url 'post_delete' post.pk %}" style="color: var(--danger);">删除</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </article>
 
     <section>
-        <h2 class="section-title">回帖</h2>
+        <div class="section-title"><span>REPLIES · {{ replies|length }}</span></div>
         {% for reply in replies %}
-            <article class="reply-box">
-                <div class="meta">
-                    <span>作者：{{ reply.author.username|default:'已注销用户' }}</span>
-                    <span>创建时间：{{ reply.created_at|date:'Y-m-d H:i' }}</span>
-                    <span>点赞：{{ reply.like_count }}</span>
-                </div>
-                <div class="reply-content">{{ reply.content }}</div>
+            <article class="reply-box {% if reply.parent_id %}is-child{% endif %}" id="reply-{{ reply.pk }}">
+                <div class="post-detail-grid">
+                    <div class="vote-col">
+                        <form class="inline-form" method="post" action="{% url 'reply_vote' reply.pk %}" data-vote-form>
+                            {% csrf_token %}
+                            <button type="submit" name="value" value="{% if user_reply_votes|get_item:reply.pk == 1 %}0{% else %}1{% endif %}"
+                                    class="vote-btn vote-up {% if user_reply_votes|get_item:reply.pk == 1 %}is-active{% endif %}">▲</button>
+                            <span class="vote-score">{{ reply.score }}</span>
+                            <button type="submit" name="value" value="{% if user_reply_votes|get_item:reply.pk == -1 %}0{% else %}-1{% endif %}"
+                                    class="vote-btn vote-down {% if user_reply_votes|get_item:reply.pk == -1 %}is-active{% endif %}">▼</button>
+                        </form>
+                    </div>
+                    <div>
+                        <div class="reply-header">
+                            {% avatar reply.author 28 %}
+                            <strong><a href="{% url 'user_profile' reply.author.username %}">{{ reply.author.username|default:'已注销用户' }}</a></strong>
+                            <span class="muted" style="font-size: 12px;">{{ reply.created_at|date:'Y-m-d H:i' }}</span>
+                        </div>
+                        {% if reply.parent %}
+                            <div class="reply-quote">
+                                回复 <strong>{{ reply.parent.author.username|default:'已注销用户' }}</strong>：
+                                <a href="#reply-{{ reply.parent.pk }}">{{ reply.parent.content|truncatechars:60 }}</a>
+                            </div>
+                        {% endif %}
+                        <div class="markdown-body">{{ reply.content|markdown }}</div>
 
-                {% if user.is_authenticated %}
-                    <form class="inline-form" method="post" action="{% url 'toggle_reply_like' reply.pk %}">
-                        {% csrf_token %}
-                        <button class="button button-secondary" type="submit">
-                            {% if reply.pk in liked_reply_ids %}取消点赞{% else %}点赞{% endif %}
-                        </button>
-                    </form>
-                {% endif %}
+                        {% if reply.attachments.all %}
+                            <div class="attachments attachments-compact">
+                                {% for att in reply.attachments.all %}
+                                    {% include 'forum/_attachment.html' with att=att %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="reply-actions">
+                            {% if user.is_authenticated %}
+                                <form class="inline-form" method="post" action="{% url 'toggle_reply_bookmark' reply.pk %}" data-bookmark-form>
+                                    {% csrf_token %}
+                                    <button class="action-btn heart-btn {% if reply.pk in user_bookmarked_reply_ids %}is-active{% endif %}" type="submit">
+                                        <span class="heart">{% if reply.pk in user_bookmarked_reply_ids %}★{% else %}☆{% endif %}</span>
+                                        <span class="label">{% if reply.pk in user_bookmarked_reply_ids %}已收藏{% else %}收藏{% endif %}</span>
+                                    </button>
+                                </form>
+                                <a href="#reply-form" class="button button-ghost"
+                                   data-reply-target="{{ reply.pk }}"
+                                   data-reply-name="{{ reply.author.username|default:'匿名' }}">回复</a>
+                                <a class="button button-ghost" href="{% url 'report_reply' reply.pk %}">举报</a>
+                            {% endif %}
+                            {% if user == reply.author or user.is_staff or is_moderator %}
+                                <a class="button button-ghost" href="{% url 'reply_edit' reply.pk %}">编辑</a>
+                                <a class="button button-ghost" href="{% url 'reply_delete' reply.pk %}" style="color: var(--danger);">删除</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </article>
         {% empty %}
-            <div class="reply-box">
-                <p class="muted">暂无回帖</p>
-            </div>
+            <div class="reply-box"><p class="muted">// 暂无回帖 //</p></div>
         {% endfor %}
     </section>
 
-    <section>
-        <h2 class="section-title">发表回帖</h2>
+    <section id="reply-form">
+        <div class="section-title">
+            <span>REPLY</span>
+            <span id="reply-target-hint" style="display:none; font-size: 13px; font-weight: 500; color: var(--neon-pink);"></span>
+        </div>
         {% if user.is_authenticated %}
-            <form class="reply-box reply-form" method="post">
+            <form class="reply-box" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                {% if reply_error %}
-                    <p class="error">{{ reply_error }}</p>
-                {% endif %}
-                <textarea name="content" placeholder="写下你的回复" required></textarea>
-                <button class="button" type="submit">提交回帖</button>
+                <input type="hidden" name="parent" id="reply-parent-input" value="">
+                {% if reply_form.errors %}<div class="error">{{ reply_form.errors }}</div>{% endif %}
+                <textarea id="reply-textarea" name="content" class="form-input" required
+                          data-mention-area
+                          placeholder="写下你的回复（支持 Markdown，输入 @ 提及他人）"></textarea>
+                <label class="upload-label" style="margin-top: 12px;">
+                    📎 添加图片 / 视频 / 文件
+                    <input type="file" name="attachments" multiple class="upload-input">
+                </label>
+                <div style="margin-top: 14px; display: flex; gap: 8px; align-items: center;">
+                    <button class="button" type="submit">提交</button>
+                    <button class="button button-ghost" type="button" id="reply-target-clear" style="display:none;">取消引用</button>
+                </div>
             </form>
         {% else %}
-            <div class="reply-box">
-                <p class="muted">登录后可以回帖</p>
-            </div>
+            <div class="reply-box"><p class="muted"><a href="{% url 'login' %}">登录</a>后可以回帖。</p></div>
         {% endif %}
     </section>
 {% endblock %}

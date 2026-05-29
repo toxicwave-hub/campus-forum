@@ -1,0 +1,8 @@
+{% with current=sort|default:'hot' %}
+<span class="sort-tabs">
+    <a class="sort-tab {% if current == 'hot' %}is-active{% endif %}" href="?{% if request.GET.feed %}feed={{ request.GET.feed }}&{% endif %}sort=hot">🔥 HOT</a>
+    <a class="sort-tab {% if current == 'new' %}is-active{% endif %}" href="?{% if request.GET.feed %}feed={{ request.GET.feed }}&{% endif %}sort=new">🆕 NEW</a>
+    <a class="sort-tab {% if current == 'top' %}is-active{% endif %}" href="?{% if request.GET.feed %}feed={{ request.GET.feed }}&{% endif %}sort=top">⭐ TOP</a>
+    <a class="sort-tab {% if current == 'discussed' %}is-active{% endif %}" href="?{% if request.GET.feed %}feed={{ request.GET.feed }}&{% endif %}sort=discussed">💬 BUZZ</a>
+</span>
+{% endwith %}

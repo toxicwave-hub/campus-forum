@@ -1,0 +1,43 @@
+{% load forum_extras %}
+<article class="post-item" data-post-id="{{ post.pk }}">
+    <div class="vote-col">
+        <form class="inline-form" method="post" action="{% url 'post_vote' post.pk %}" data-vote-form>
+            {% csrf_token %}
+            <button type="submit" name="value" value="{% if user_post_votes|get_item:post.pk == 1 %}0{% else %}1{% endif %}"
+                    class="vote-btn vote-up {% if user_post_votes|get_item:post.pk == 1 %}is-active{% endif %}"
+                    aria-label="赞">▲</button>
+            <span class="vote-score" data-score-for="{{ post.pk }}">{{ post.score }}</span>
+            <button type="submit" name="value" value="{% if user_post_votes|get_item:post.pk == -1 %}0{% else %}-1{% endif %}"
+                    class="vote-btn vote-down {% if user_post_votes|get_item:post.pk == -1 %}is-active{% endif %}"
+                    aria-label="踩">▼</button>
+        </form>
+    </div>
+
+    <div class="post-item-body">
+        <h3 class="post-title">
+            {% if post.is_pinned %}<span class="pin-badge">PIN</span>{% endif %}
+            {% if post.is_nsfw %}<span class="nsfw-badge">NSFW</span>{% endif %}
+            <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+        </h3>
+        <div class="meta">
+            {% if show_board|default:True %}
+                <a href="{% url 'board_detail' post.board.slug %}">{{ post.board.icon }} {{ post.board.name }}</a>
+                <span class="dot"></span>
+            {% endif %}
+            {% avatar post.author 18 %}
+            <a href="{% url 'user_profile' post.author.username %}">{{ post.author.username|default:'已注销用户' }}</a>
+            <span class="dot"></span>
+            <span>{{ post.created_at|date:'Y-m-d H:i' }}</span>
+            <span class="dot"></span>
+            <span>👁 {{ post.view_count }}</span>
+            <span class="dot"></span>
+            <span>💬 {{ post.reply_count|default:0 }}</span>
+        </div>
+    </div>
+
+    {% if post.cover_image %}
+        <a class="post-cover" href="{% url 'post_detail' post.pk %}" tabindex="-1">
+            <img src="{{ post.cover_image.url }}" alt="" loading="lazy">
+        </a>
+    {% endif %}
+</article>

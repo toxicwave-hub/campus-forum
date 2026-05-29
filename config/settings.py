@@ -46,7 +46,7 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool('DEBUG', True)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.pythonanywhere.com']
 ALLOWED_HOSTS += env_list('DJANGO_ALLOWED_HOSTS')
 
 render_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -55,7 +55,8 @@ if render_hostname:
 
 ALLOWED_HOSTS = list(dict.fromkeys(ALLOWED_HOSTS))
 
-CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS')
+CSRF_TRUSTED_ORIGINS = ['https://*.pythonanywhere.com']
+CSRF_TRUSTED_ORIGINS += env_list('CSRF_TRUSTED_ORIGINS')
 if render_hostname:
     CSRF_TRUSTED_ORIGINS.append(f'https://{render_hostname}')
 

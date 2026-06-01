@@ -62,12 +62,18 @@ class BoardModeratorAdmin(admin.ModelAdmin):
 @admin.register(Conversation)
 class ConversationAdmin(admin.ModelAdmin):
     list_display = ('user_a', 'user_b', 'last_message_at')
+    search_fields = ('user_a__username', 'user_b__username')
 
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('conversation', 'sender', 'is_read', 'created_at')
+    list_display = ('conversation', 'sender', 'content_preview', 'is_read', 'created_at')
     list_filter = ('is_read',)
+    search_fields = ('content', 'sender__username', 'conversation__user_a__username', 'conversation__user_b__username')
+
+    @admin.display(description='内容预览')
+    def content_preview(self, obj):
+        return obj.content[:80]
 
 
 @admin.register(Report)
@@ -90,6 +96,7 @@ class LinkPreviewAdmin(admin.ModelAdmin):
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'nickname', 'karma', 'created_at')
+    search_fields = ('user__username', 'user__email', 'nickname')
 
 
 @admin.register(Notification)

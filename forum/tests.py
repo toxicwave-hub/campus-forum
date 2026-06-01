@@ -42,6 +42,36 @@ class HomeAndNavigationTests(ForumBaseTestCase):
         self.assertContains(resp, self.board.name)
 
 
+class AccountFlowTests(TestCase):
+    def test_register_normalizes_username_and_logs_user_in(self):
+        response = self.client.post(reverse('register'), {
+            'username': 'NewStudent',
+            'email': 'new@example.com',
+            'password1': 'Pwd-12345!',
+            'password2': 'Pwd-12345!',
+        })
+        self.assertRedirects(response, reverse('home'))
+        user = User.objects.get(username='newstudent')
+        self.assertEqual(int(self.client.session['_auth_user_id']), user.pk)
+
+    def test_login_username_is_case_insensitive(self):
+        User.objects.create_user('mixedcase', password='Pwd-12345!')
+        response = self.client.post(reverse('login'), {
+            'username': 'MixedCase',
+            'password': 'Pwd-12345!',
+        })
+        self.assertRedirects(response, reverse('home'))
+
+    def test_register_rejects_case_insensitive_duplicate(self):
+        User.objects.create_user('existing', password='Pwd-12345!')
+        response = self.client.post(reverse('register'), {
+            'username': 'Existing',
+            'password1': 'Pwd-12345!',
+            'password2': 'Pwd-12345!',
+        })
+        self.assertContains(response, '这个用户名已经被注册。')
+
+
 class PostFlowTests(ForumBaseTestCase):
     def test_post_create_requires_login(self):
         url = reverse('new_post', args=[self.board.slug])

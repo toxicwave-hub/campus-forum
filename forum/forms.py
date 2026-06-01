@@ -42,9 +42,20 @@ class RegisterForm(StyledFormMixin, UserCreationForm):
         fields = ('username', 'email', 'password1', 'password2')
         labels = {'username': '用户名'}
 
+    def clean_username(self):
+        username = self.cleaned_data['username'].strip().lower()
+        if User.objects.filter(username__iexact=username).exists():
+            raise forms.ValidationError('这个用户名已经被注册。')
+        return username
+
 
 class LoginForm(StyledFormMixin, AuthenticationForm):
-    pass
+    def clean_username(self):
+        username = self.cleaned_data['username'].strip()
+        matches = User.objects.filter(username__iexact=username)
+        if matches.count() == 1:
+            return matches.get().username
+        return username
 
 
 class PostForm(StyledFormMixin, forms.ModelForm):
